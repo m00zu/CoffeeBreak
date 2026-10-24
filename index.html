@@ -536,7 +536,7 @@
     const st = (el, v) => { el.textContent = v === undefined ? '未選' : '✓ 完成'; el.classList.toggle('ok', v !== undefined); };
     st($('#stDrink'), order.drink); st($('#stSando'), order.sandwich);
     renderSlot($('#slotDrink'), order.drink, order.drink ? cupSVG(toneOf(order.drink.item), /熱/.test(order.drink.temp)) : cupSVG('#c49a6c', false), '尚未選擇');
-    renderSlot($('#slotSando'), order.sandwich, sandoSVG(order.sandwich ? sandoOf(order.sandwich.item).fill : ['#f6e08a']), '尚未選擇');
+    renderSlot($('#slotSando'), order.sandwich, sandoSVG(order.sandwich ? sandoOf(order.sandwich.item).fill : SANDWICH.items[0].fill), '尚未選擇');
     $('#submit').classList.toggle('wait', !ready());
   }
   document.querySelectorAll('.slot').forEach(s => s.onclick = () => setSection(s.dataset.s, true));
@@ -586,6 +586,10 @@
   };
 
   renderAll(); requestAnimationFrame(movePill); window.onresize = movePill;
+  // 初次載入時字型或版面可能還沒就緒：分頁尺寸一變動就重新定位底色
+  new ResizeObserver(movePill).observe($('#tabs'));
+  document.fonts?.ready.then(movePill);
+  window.addEventListener('load', movePill);
 </script>
 </body>
 </html>

@@ -399,7 +399,7 @@
   function renderMenu() {
     const b = MENU[brand];
     document.documentElement.style.setProperty('--accent', b.accent);
-    $('#brandTag').textContent = '— ' + b.tagline + ' —';
+    $('#brandTag').textContent = b.tagline ? '— ' + b.tagline + ' —' : '';
     $('#cats').innerHTML = b.categories.map((c, i) => `<button data-c="${i}">${c.name}</button>`).join('');
     let i = 0;
     const html = b.categories.map((c, ci) => {

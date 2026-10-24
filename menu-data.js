@@ -4,7 +4,7 @@ const L = (name, extra = {}) => ({ name, ...extra });
 
 window.MENU = {
   louisa: {
-    id: 'louisa', name: '路易莎咖啡', en: 'LOUISA', tagline: '每天的好咖啡，就在巷口', accent: '#8a5a2b',
+    id: 'louisa', name: '路易莎咖啡', en: 'LOUISA', tagline: '', accent: '#8a5a2b',
     sizes: ['中杯', '大杯'],
     milks: ['鮮奶', '燕麥奶'],
     sugar: true,

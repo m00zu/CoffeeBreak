@@ -8,9 +8,9 @@ const HEADERS = ['更新時間', '姓名', '飲料', '三明治', '原始資料'
 
 function sheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName(SHEET_NAME);
-  if (!sh) {
-    sh = ss.insertSheet(SHEET_NAME);
+  const sh = ss.getSheetByName(SHEET_NAME) || ss.insertSheet(SHEET_NAME);
+  // 分頁是空的（例如手動建立或清空過）時補上表頭
+  if (sh.getLastRow() === 0) {
     sh.appendRow(HEADERS);
     sh.setFrozenRows(1);
   }

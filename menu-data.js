@@ -44,7 +44,7 @@ window.MENU = {
   },
 
   qingshan: {
-    id: 'qingshan', name: '青山', en: 'QING SHAN', tagline: '青茶專業製作', accent: '#2f6b3a',
+    id: 'qingshan', name: '青山', en: 'PEAK TEA', tagline: '青茶專業製作', accent: '#2f6b3a',
     sizes: ['中杯 M', '大杯 L'],
     temps: ['正常冰', '少冰', '微冰', '去冰', '常溫', '溫熱'],
     sugars: ['正常糖', '少糖', '半糖', '微糖', '1分糖', '無糖'],

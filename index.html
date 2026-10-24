@@ -152,13 +152,12 @@
   .sando-card:hover .art::before { scale: 1.12; }
   .art .sando { width: 138px; position: relative; overflow: visible; }
   .sando .back, .sando .front { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .6s cubic-bezier(.3, 1.5, .5, 1); }
-  .sando .back { transform: translate(12px, -9px); }
-  .sando-card:hover .sando .front, .sando-card.picked .sando .front { transform: translate(-8px, 3px) rotate(-6deg); }
-  .sando-card:hover .sando .back, .sando-card.picked .sando .back { transform: translate(20px, -14px) rotate(7deg); }
+  .sando .back { transform: translate(34px, -20px); }
+  .sando-card:hover .sando .front, .sando-card.picked .sando .front { transform: translate(-6px, 4px) rotate(-5deg); }
+  .sando-card:hover .sando .back, .sando-card.picked .sando .back { transform: translate(44px, -26px) rotate(5deg); }
   .sando .shadow { transition: .5s; transform-box: fill-box; transform-origin: center; }
   .sando-card:hover .sando .shadow { transform: scaleX(1.15); opacity: .18; }
-  .sando-card h3 { font-family: 'Noto Serif TC', serif; font-size: 19px; margin: 6px 0 6px; }
-  .sando-card p { margin: 0 0 12px; color: var(--ink-soft); font-size: 13px; line-height: 1.6; min-height: 21px; }
+  .sando-card h3 { font-family: 'Noto Serif TC', serif; font-size: 19px; margin: 6px 0 10px; }
   .sando-card .chipline { justify-content: center; min-height: 20px; }
   .stamp {
     position: absolute; right: 16px; top: 14px; width: 62px; height: 62px; border-radius: 50%; border: 2.5px solid var(--leaf); color: var(--leaf);
@@ -184,10 +183,9 @@
   .sheet .sando-hero { text-align: center; }
   .sheet .sando-hero .art { height: 170px; }
   .sheet .sando-hero .art .sando { width: 160px; }
-  .sheet .sando-hero .sando .front { transform: translate(-8px, 3px) rotate(-6deg); }
-  .sheet .sando-hero .sando .back { transform: translate(20px, -14px) rotate(7deg); }
-  .sheet .sando-hero h2 { font-size: 26px; }
-  .sheet .sando-hero p { color: var(--ink-soft); margin: 4px 0 10px; }
+  .sheet .sando-hero .sando .front { transform: translate(-6px, 4px) rotate(-5deg); }
+  .sheet .sando-hero .sando .back { transform: translate(44px, -26px) rotate(5deg); }
+  .sheet .sando-hero h2 { font-size: 26px; margin-bottom: 10px; }
   .sheet .sando-hero .chipline { justify-content: center; }
   .opt-label { font-size: 13px; color: var(--ink-soft); margin: 18px 0 8px; font-weight: 700; letter-spacing: .05em; }
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -282,7 +280,7 @@
     <div class="tabs" id="tabs">
       <span class="pill" id="pill"></span>
       <button class="tab on" data-b="louisa"></button>
-      <button class="tab" data-b="tea"></button>
+      <button class="tab" data-b="qingshan"></button>
     </div>
     <div class="brand-tag" id="brandTag"></div>
     <button class="none-card" id="noDrink">
@@ -391,6 +389,8 @@
   function tagsOf(it) {
     const t = [];
     if (it.star) t.push(`<span class="mini star">${it.star}<i>👍</i></span>`);
+    if (it.rec) t.push('<span class="mini pop">推薦</span>');
+    if (it.decaf) t.push('<span class="mini veg">無咖啡因</span>');
     if (it.tag === '新品' || it.tag === '限定') t.push(`<span class="mini new">${it.tag}</span>`);
     else if (it.tag === '人氣' || it.tag === '招牌') t.push(`<span class="mini pop">${it.tag}</span>`);
     else if (it.tag) t.push(`<span class="mini">${it.tag}</span>`);
@@ -439,22 +439,24 @@
 
   function openDrink(item) {
     const b = MENU[brand];
-    const temps = b.temps || (item.t === 'ice' ? ['正常冰', '少冰', '去冰'] : item.t === 'hot' ? ['熱'] : ['熱', '正常冰', '少冰', '去冰']);
+    const sizes = item.sizes || b.sizes;
+    const temps = item.temps || b.temps || (item.t === 'ice' ? ['正常冰', '少冰', '去冰'] : item.t === 'hot' ? ['熱'] : ['熱', '正常冰', '少冰', '去冰']);
     let sugars = b.sugars || (b.sugar ? ['正常糖', '少糖', '半糖', '微糖', '無糖'] : null);
-    if (sugars && item.minSugar) sugars = sugars.slice(sugars.indexOf(item.minSugar));
-    const toppings = (b.toppings || []).filter(t => !(item.cheese && t === '芝士奶蓋'));
+    if (sugars && item.minSugar) sugars = sugars.slice(0, sugars.indexOf(item.minSugar) + 1);
+    if (sugars && item.noSugarFree) sugars = sugars.filter(v => v !== '無糖');
+    const toppings = (b.toppings || []).filter(t => !item.name.replace(/\s/g, '').includes(t));
     const opt = {
-      size: b.sizes.length > 1 ? b.sizes[0] : '', temp: temps[0], sweetener: item.sweeteners ? item.sweeteners[0] : '',
+      size: b.sizes.length > 1 ? sizes[0] : '', temp: temps[0], sweetener: item.sweeteners ? item.sweeteners[0] : '',
       sugar: sugars ? (b.sugars ? sugars[0] : '正常糖') : '', milk: hasMilk(item.name) && b.milks.length ? b.milks[0] : '', toppings: [],
     };
     const group = (key, label, list) => `<div class="opt-label">${label}</div>
       <div class="chips" data-k="${key}">${list.map(v => `<button class="chip ${opt[key] === v ? 'on' : ''}" data-v="${v}">${v}</button>`).join('')}</div>`;
     $('#sheet').innerHTML = `
-      <div class="head"><span id="sheetCup">${cupSVG(toneOf(item.name), temps[0] === '熱')}</span>
+      <div class="head"><span id="sheetCup">${cupSVG(toneOf(item.name), /熱/.test(temps[0]))}</span>
         <div><h2>${item.name}</h2><div class="brandname">${b.name}</div><div class="chipline" style="margin-top:6px">${tagsOf(item)}</div></div></div>
-      ${opt.size ? group('size', '杯型', b.sizes) : ''}${group('temp', b.temps ? '冰塊' : '溫度', temps)}
+      ${opt.size ? group('size', sizes.length > 1 ? '杯型' : '杯型（本品僅此尺寸）', sizes) : ''}${group('temp', item.temps ? '冰塊（本品僅供少冰）' : b.temps ? '冰塊・溫度' : '溫度', temps)}
       ${opt.sweetener ? group('sweetener', '糖種', item.sweeteners) : ''}
-      ${sugars ? group('sugar', item.minSugar ? '甜度（本品最低微糖）' : '甜度', sugars) : ''}
+      ${sugars ? group('sugar', item.minSugar ? `甜度（本品最低${item.minSugar}）` : item.noSugarFree ? '甜度（本品不提供無糖）' : '甜度', sugars) : ''}
       ${opt.milk ? group('milk', '奶類', b.milks) : ''}
       ${toppings.length ? `<div class="opt-label">加料（可複選，不加也可以）</div>
         <div class="chips" data-k="toppings" data-multi>${toppings.map(v => `<button class="chip" data-v="${v}">＋ ${v}</button>`).join('')}</div>` : ''}
@@ -469,7 +471,7 @@
       }
       g.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
       opt[g.dataset.k] = c.dataset.v;
-      if (g.dataset.k === 'temp') $('#sheetCup').innerHTML = cupSVG(toneOf(item.name), c.dataset.v === '熱');
+      if (g.dataset.k === 'temp') $('#sheetCup').innerHTML = cupSVG(toneOf(item.name), /熱/.test(c.dataset.v));
     });
     $('#add').onclick = () => {
       order.drink = { brand, brandName: b.name, item: item.name, ...opt, note: $('#note').value.trim() };
@@ -490,7 +492,7 @@
         <span class="no">No.${String(i + 1).padStart(2, '0')}</span>
         <span class="stamp">已選</span>
         <div class="art">${sandoSVG(s.fill)}</div>
-        <h3>${s.name}</h3><p>${s.desc}</p>
+        <h3>${s.name}</h3>
         <div class="chipline">${sandoTags(s)}</div>
       </button>`).join('');
   }
@@ -500,7 +502,7 @@
   function openSando(s) {
     $('#sheet').innerHTML = `
       <div class="sando-hero" style="--bg:${s.bg};--i:0"><div class="art">${sandoSVG(s.fill)}</div>
-        <h2>${s.name}</h2><p>${s.desc}</p><div class="chipline">${sandoTags(s)}</div></div>
+        <h2>${s.name}</h2><div class="chipline">${sandoTags(s)}</div></div>
       <div class="opt-label">備註（選填）</div><textarea id="note" rows="2" maxlength="80" placeholder="例如：不要生菜、切邊"></textarea>
       <button class="btn full leaf" id="add">就決定這份</button>`;
     $('#add').onclick = () => {
@@ -533,7 +535,7 @@
     $('#noSando').classList.toggle('picked', order.sandwich === null);
     const st = (el, v) => { el.textContent = v === undefined ? '未選' : '✓ 完成'; el.classList.toggle('ok', v !== undefined); };
     st($('#stDrink'), order.drink); st($('#stSando'), order.sandwich);
-    renderSlot($('#slotDrink'), order.drink, order.drink ? cupSVG(toneOf(order.drink.item), order.drink.temp === '熱') : cupSVG('#c49a6c', false), '尚未選擇');
+    renderSlot($('#slotDrink'), order.drink, order.drink ? cupSVG(toneOf(order.drink.item), /熱/.test(order.drink.temp)) : cupSVG('#c49a6c', false), '尚未選擇');
     renderSlot($('#slotSando'), order.sandwich, sandoSVG(order.sandwich ? sandoOf(order.sandwich.item).fill : ['#f6e08a']), '尚未選擇');
     $('#submit').classList.toggle('wait', !ready());
   }
@@ -571,7 +573,7 @@
     btn.disabled = false; btn.textContent = '送出';
     const d = order.drink, s = order.sandwich;
     $('#done').innerHTML = `<div>
-      <div class="art-row">${d ? cupSVG(toneOf(d.item), d.temp === '熱') : ''}${s ? sandoSVG(sandoOf(s.item).fill) : ''}</div>
+      <div class="art-row">${d ? cupSVG(toneOf(d.item), /熱/.test(d.temp)) : ''}${s ? sandoSVG(sandoOf(s.item).fill) : ''}</div>
       <h2>收到了，${esc(name)}！</h2>
       <p>您的選擇已經送出，口試當天見 ☕<br>想修改的話，用同樣的名字重新送出就可以。</p>
       <div class="receipt">

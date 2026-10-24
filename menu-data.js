@@ -43,26 +43,48 @@ window.MENU = {
     ],
   },
 
-  tea: {
-    id: 'tea', name: '壽奶茶', en: 'MILK TEA', tagline: '微糖微冰，最對味', accent: '#9a6a3a',
-    sizes: ['500cc'],
-    temps: ['正常冰', '少冰', '微冰', '去冰（含小碎冰）', '完全去冰'],
-    sugars: ['無糖', '1分', '3分（微糖）', '5分（半糖）', '7分（少糖）', '全糖'],
-    toppings: ['粉圓 小珍珠', '芝士奶蓋'],
-    milks: [],
+  qingshan: {
+    id: 'qingshan', name: '青山', en: 'QING SHAN', tagline: '青茶專業製作', accent: '#2f6b3a',
+    sizes: ['中杯 M', '大杯 L'],
+    temps: ['正常冰', '少冰', '微冰', '去冰', '常溫', '溫熱'],
+    sugars: ['正常糖', '少糖', '半糖', '微糖', '1分糖', '無糖'],
+    toppings: ['琥珀珍珠', '蕎麥珍珠', '海鹽奶蓋', '蕎麥奶蓋', '菜燕', '青茶茶凍', '青茶婚貴', '杏仁凍'],
+    milks: ['鮮奶', '燕麥奶'], // 那堤系列可升級燕麥奶
     categories: [
-      { name: '鮮奶類', items: [
-        L('黑糖錫蘭鮮奶茶', { tag: '招牌', minSugar: '3分（微糖）' }),
-        L('鐵觀音鮮奶茶', { sweeteners: ['黑糖', '蔗糖'] }),
-        L('半熟烤茶鮮奶茶', { sweeteners: ['黑糖', '蔗糖'], star: '阿瑄推薦' }),
-        L('昭和 焙茶鮮奶茶'), L('貴妃 普洱鮮奶茶'),
-        L('黑糖純鮮奶', { tag: '無咖啡因', minSugar: '3分（微糖）' }),
+      { name: '青・原味青茶', items: [
+        L('春青', { tag: '花香・口感輕' }), L('夏青', { tag: '木質香・口感重' }),
+        L('秋青', { tag: '奶香・口感中' }), L('冬青', { tag: '清香・口感輕', rec: true }),
       ] },
-      { name: '原創產品', items: [
-        L('髒髒芝士奶蓋可可', { cheese: true }), L('髒髒芝士奶蓋抹茶', { cheese: true }),
-        L('鐵觀音芝士奶蓋麵茶', { cheese: true }), L('鐵觀音芝士奶蓋麵茶 2.0', { cheese: true }),
+      { name: '無・無咖啡因', items: [
+        L('東方菊花茶', { decaf: true }), L('西穀蕎麥茶', { decaf: true }), L('南非國寶', { decaf: true }),
+        L('北風桂花玄米茶', { decaf: true, rec: true }),
       ] },
-      { name: '純茶類', items: [L('特級紅烏龍'), L('半熟烤茶')] },
+      { name: '調', items: [
+        L('青山綠水', { rec: true }), L('春青菊花'),
+        L('蕎麥冬露', { rec: true, decaf: true, sizes: ['大杯 L'], minSugar: '半糖' }),
+        L('春青冬露', { sizes: ['大杯 L'], minSugar: '半糖' }),
+        L('菊花冬露', { decaf: true, sizes: ['大杯 L'], minSugar: '半糖' }),
+        L('多多綠水', { sizes: ['大杯 L'] }),
+      ] },
+      { name: '料', items: [
+        L('菜燕春青', { rec: true }), L('菜燕奶茶', { rec: true }), L('杏仁凍春青'), L('青茶婚貴奶茶'),
+        L('琥珀珍珠奶茶', { rec: true }), L('蕎麥珍珠奶茶'), L('青茶凍天蟬那堤'), L('琥珀珍珠天蟬那堤'),
+        L('蕎麥珍珠夏青那堤', { rec: true }),
+      ] },
+      { name: '茶', items: [L('綠水'), L('天蟬紅茶', { rec: true })] },
+      { name: '蓋・鮮奶油奶蓋', items: [
+        L('蕎麥奶蓋 綠水', { temps: ['少冰'] }), L('蕎麥奶蓋 玄米茶', { temps: ['少冰'], rec: true, decaf: true }),
+        L('海鹽奶蓋 春青', { temps: ['少冰'], rec: true }), L('海鹽奶蓋 紅茶', { temps: ['少冰'], rec: true }),
+        L('海鹽奶蓋 輕蘋香茶', { temps: ['少冰'], rec: true, sizes: ['中杯 M'] }),
+      ] },
+      { name: '奶', items: [
+        L('山峰奶茶'), L('夏青那堤', { rec: true }), L('蕎麥那堤', { decaf: true }), L('天蟬那堤', { rec: true }), L('天蟬燕麥奶'),
+      ] },
+      { name: '果', items: [
+        L('白甘蔗春青', { rec: true, noSugarFree: true }), L('香檸綠水', { noSugarFree: true }), L('柳丁綠水', { noSugarFree: true }),
+        L('紅柚綠水', { rec: true, noSugarFree: true }), L('輕蘋香茶', { rec: true, noSugarFree: true }),
+        L('荔枝春青', { rec: true, noSugarFree: true, tag: '含青茶凍' }),
+      ] },
     ],
   },
 };
@@ -70,7 +92,7 @@ window.MENU = {
 // 依品名自動配色（杯中飲料顏色）
 window.toneOf = function (name) {
   const rules = [
-    [/抹茶/, '#8fae5d'], [/泰奶/, '#e39a5a'], [/麵茶/, '#cfa77a'], [/紅烏龍|烤茶$/, '#a8572c'], [/芭樂|青梅/, '#a9c96a'], [/芒果|柳橙|蜜柚|夏威夷/, '#e9a948'], [/草莓|櫻桃|火龍果|荔枝|玫瑰|蜜桃|山竹/, '#d9727f'],
+    [/抹茶/, '#8fae5d'], [/荔枝/, '#e6a0a8'], [/那堤|燕麥奶|奶茶/, '#d6b48c'], [/甘蔗|輕蘋|多多/, '#d9c77a'], [/柳丁|紅柚/, '#e9a948'], [/蕎麥(茶|冬露)$|^蕎麥奶蓋|玄米|國寶/, '#b8864e'], [/菊花/, '#e2c46a'], [/綠水$|春青$|夏青$|秋青$|^冬青$|冬露$/, '#c9b85c'], [/泰奶/, '#e39a5a'], [/麵茶/, '#cfa77a'], [/紅烏龍|烤茶$/, '#a8572c'], [/芭樂|青梅/, '#a9c96a'], [/芒果|柳橙|蜜柚|夏威夷/, '#e9a948'], [/草莓|櫻桃|火龍果|荔枝|玫瑰|蜜桃|山竹/, '#d9727f'],
     [/檸|百香|青檸|洋甘菊|蕎麥|烏龍|綠茶|青茶|翠玉/, '#d8c06a'], [/巧克力|可可|摩卡/, '#5e3a24'],
     [/星冰樂|冰沙|雲朵|歐蕾|小農|鮮奶$|醇乳/, '#e6cfb1'], [/奶茶|紅茶那堤|伯爵茶那堤|福吉|焙茶|泰式|紅蜜/, '#c8a27c'],
     [/紅茶|水果茶/, '#a8572c'], [/拿鐵|那堤|卡布|瑪奇朵|馥列白|密斯朵|鴛鴦/, '#c49a6c'],
@@ -97,46 +119,109 @@ window.cupSVG = function (tone, hot = true) {
 };
 
 // 布島小樹 手作三明治（依店家菜單照片，未含限量供應品項）
-// fill: 餡料顏色（插畫用）；bread: 指定吐司；veg: 蛋奶素；rec: 店家推薦（菜單上的愛心）；spicy: 菜單上的辣椒標示
+// fill: 插畫用的餡料層（由下往上），只是示意；bread: 指定吐司；veg: 蛋奶素；rec: 店家推薦（菜單上的愛心）；spicy: 菜單上的辣椒標示
 window.SANDWICH = {
   name: '布島小樹', en: 'BUDAO TREE · SANDOS', tagline: '職人手作・便利輕食', accent: '#6b8e4e',
   items: [
-    { name: '鍾愛雞蛋沙拉', desc: '綿密蛋沙拉，最單純的幸福', rec: true, veg: true, fill: ['#f6e08a'], bg: '#fbf0c4' },
-    { name: '肉鬆雞蛋沙拉', desc: '蛋沙拉配上肉鬆，鹹甜剛好', fill: ['#f6e08a', '#c98a4a'], bg: '#f7e4c8' },
-    { name: '香濃起司厚蛋', desc: '厚蛋疊上濃郁起司', rec: true, veg: true, bread: '麥香吐司', fill: ['#f4c542', '#f2a93b'], bg: '#fde7b8' },
-    { name: '法式雞胸厚蛋', desc: '嫩雞胸與厚蛋，清爽有飽足感', fill: ['#f4c542', '#ead7b4'], bg: '#efe6d3' },
-    { name: '藍莓優格雞胸', desc: '藍莓的酸甜遇上優格與雞胸', rec: true, fill: ['#6c64a8', '#f3eee6', '#ead7b4'], bg: '#e4e1f3' },
-    { name: '松露厚蛋雞胸', desc: '淡淡松露香，厚蛋與雞胸', bread: '麥香吐司', fill: ['#f4c542', '#5a4a3c', '#ead7b4'], bg: '#e9e2d8' },
-    { name: '香濃起司厚蛋培根', desc: '起司、厚蛋、培根三重奏', bread: '麥香吐司', fill: ['#f2a93b', '#f4c542', '#c0504d'], bg: '#fbe0cf' },
-    { name: '熔岩花生培根', desc: '濃郁花生醬 × 鹹香培根', fill: ['#b8743a', '#c0504d'], bg: '#f3dcc6' },
-    { name: '切達起司香煎牛', desc: '香煎牛肉配切達起司', fill: ['#f2a93b', '#7a3e2a'], bg: '#f1d9cb' },
-    { name: '卡拉脆雞厚蛋', desc: '酥脆雞排疊上厚蛋', fill: ['#d9963a', '#f4c542'], bg: '#fbe6c0' },
-    { name: '嫩煎里肌厚蛋', desc: '嫩煎里肌，香氣帶勁', spicy: true, fill: ['#a8623a', '#f4c542'], bg: '#f6dccb' },
+    { name: '鍾愛雞蛋沙拉', rec: true, veg: true, fill: ['lettuce', 'eggsalad'], bg: '#d9e6f0' },
+    { name: '肉鬆雞蛋沙拉', fill: ['lettuce', 'eggsalad', 'floss'], bg: '#e1ead3' },
+    { name: '香濃起司厚蛋', rec: true, veg: true, bread: '麥香吐司', fill: ['lettuce', 'egg', 'cheese'], bg: '#e6dff0' },
+    { name: '法式雞胸厚蛋', fill: ['lettuce', 'tomato', 'chicken', 'egg'], bg: '#d8ebe2' },
+    { name: '藍莓優格雞胸', rec: true, fill: ['lettuce', 'chicken', 'blueberry'], bg: '#f5e1e5' },
+    { name: '松露厚蛋雞胸', bread: '麥香吐司', fill: ['lettuce', 'chicken', 'truffle'], bg: '#dde6ef' },
+    { name: '香濃起司厚蛋培根', bread: '麥香吐司', fill: ['lettuce', 'bacon', 'egg', 'cheese'], bg: '#e2ecd7' },
+    { name: '熔岩花生培根', fill: ['lettuce', 'bacon', 'peanut'], bg: '#dfe8f2' },
+    { name: '切達起司香煎牛', fill: ['lettuce', 'tomato', 'beef', 'cheese'], bg: '#e8e1f1' },
+    { name: '卡拉脆雞厚蛋', fill: ['lettuce', 'egg', 'katsu'], bg: '#d6e8ec' },
+    { name: '嫩煎里肌厚蛋', spicy: true, fill: ['lettuce', 'tomato', 'pork', 'egg'], bg: '#e5eddb' },
   ],
 };
 
-// 三明治插畫：切半的兩塊三角吐司（hover 時會分開），露出生菜與餡料
+// 三明治插畫：日式厚切三明治，切半的兩塊直立、露出切面（帶透視與光影）
+// 每種餡料：相對厚度 + 繪製函式（x0~x1 寬、y 為頂端、h 為高度）
+const SANDO_LAYERS = (() => {
+  const wave = (x0, x1, y, amp, n) => {
+    const step = (x1 - x0) / n; let d = `M${x0} ${y}`;
+    for (let i = 0; i < n; i++) d += ` q${step / 2} ${i % 2 ? amp : -amp} ${step} 0`;
+    return d;
+  };
+  const dots = (x0, x1, y, h, n, r, color, seed) => Array.from({ length: n }, (_, i) => {
+    const fx = ((i * 37 + seed * 11) % 97) / 97, fy = ((i * 53 + seed * 7) % 89) / 89;
+    return `<circle cx="${(x0 + 2 + fx * (x1 - x0 - 4)).toFixed(1)}" cy="${(y + 1.5 + fy * (h - 3)).toFixed(1)}" r="${r}" fill="${color}"/>`;
+  }).join('');
+  const slab = (x0, x1, y, h, c) => `<rect x="${x0}" y="${y}" width="${x1 - x0}" height="${h}" rx="2" fill="${c}"/>`;
+  return {
+    lettuce: [6, (x0, x1, y, h) => `<path d="${wave(x0 - 1.5, x1 + 1.5, y + 1.6, 1.6, 12)} L${x1 + 1.5} ${y + h} ${wave(x1 + 1.5, x0 - 1.5, y + h, 1.6, 10).slice(1).replace(/^[\d.-]+ [\d.-]+/, '')} Z" fill="#a6d163" stroke="#6fa33a" stroke-width="1"/>
+      <path d="${wave(x0 - 2, x1 + 2, y + h * .55, 1.2, 8)}" stroke="#d9efb0" stroke-width="1" fill="none"/>`],
+    tomato: [5, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#e0503f') + `<rect x="${x0 + 4}" y="${y + 1.4}" width="${(x1 - x0) / 2 - 6}" height="${h - 2.8}" rx="1.5" fill="#f07c62"/><rect x="${(x0 + x1) / 2 + 2}" y="${y + 1.4}" width="${(x1 - x0) / 2 - 6}" height="${h - 2.8}" rx="1.5" fill="#f07c62"/>`],
+    egg: [12, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#f6c93f') + `<rect x="${x0 + 1}" y="${y + 1.5}" width="${x1 - x0 - 2}" height="${h * .28}" fill="#fbe08a" opacity=".8"/><path d="M${x0 + 1} ${y + h * .62}h${x1 - x0 - 2}" stroke="#eab42c" stroke-width="1"/>`],
+    eggsalad: [16, (x0, x1, y, h) => `<path d="${wave(x0 - 1, x1 + 1, y + 2, 2, 7)} L${x1 + 1} ${y + h} L${x0 - 1} ${y + h} Z" fill="#fbf1cf"/>` + dots(x0, x1, y + 2, h - 2, 14, 1.6, '#f4c845', 1) + dots(x0, x1, y + 2, h - 2, 8, 1.1, '#fffdf6', 2)],
+    chicken: [9, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#efd8bf') + `<path d="M${x0 + 4} ${y + h * .35}h${x1 - x0 - 10}M${x0 + 8} ${y + h * .7}h${x1 - x0 - 14}" stroke="#ddbf9d" stroke-width="1" stroke-linecap="round"/>`],
+    bacon: [6, (x0, x1, y, h) => `<path d="${wave(x0, x1, y + 1.5, 1.4, 6)} L${x1} ${y + h} ${wave(x1, x0, y + h, 1.4, 6).slice(1).replace(/^[\d.-]+ [\d.-]+/, '')} Z" fill="#c4524a"/><path d="${wave(x0 + 1, x1 - 1, y + h * .55, 1.2, 6)}" stroke="#f3c2b2" stroke-width="1.4" fill="none"/>`],
+    beef: [9, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#7a4330') + `<rect x="${x0 + 1}" y="${y + 1}" width="${x1 - x0 - 2}" height="2" fill="#9a5a40"/>` + dots(x0, x1, y, h, 6, .8, '#5b2f20', 3)],
+    cheese: [4, (x0, x1, y, h) => slab(x0, x1 + 1, y, h, '#f5a623') + `<path d="M${x1 - 6} ${y + h} q2 6 4 0z M${x0 + 8} ${y + h} q1.6 4 3.2 0z" fill="#f5a623"/>`],
+    katsu: [13, (x0, x1, y, h) => `<path d="${wave(x0 - 1, x1 + 1, y + 2, 1.8, 12)} L${x1 + 1} ${y + h - 1} ${wave(x1 + 1, x0 - 1, y + h - 1, 1.8, 12).slice(1).replace(/^[\d.-]+ [\d.-]+/, '')} Z" fill="#dd9535"/><rect x="${x0 + 4}" y="${y + 4}" width="${x1 - x0 - 8}" height="${h - 8}" rx="2" fill="#f5e6c8"/>` + dots(x0, x1, y, h, 18, .9, '#b56e1c', 4)],
+    pork: [9, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#c08452') + `<path d="M${x0 + 6} ${y + 2}l5 ${h - 4}M${x0 + 20} ${y + 2}l5 ${h - 4}M${x0 + 34} ${y + 2}l5 ${h - 4}M${x0 + 48} ${y + 2}l5 ${h - 4}" stroke="#8f5530" stroke-width="1.6" stroke-linecap="round"/>`],
+    floss: [6, (x0, x1, y, h) => `<path d="${wave(x0, x1, y + 2, 2.2, 9)} L${x1} ${y + h} L${x0} ${y + h} Z" fill="#c98a4a"/><path d="${wave(x0 + 2, x1 - 2, y + h * .6, 1.5, 14)}" stroke="#e2ad6e" stroke-width=".9" fill="none"/>`],
+    blueberry: [10, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#fbf7f0') + dots(x0, x1, y, h, 9, 2.2, '#4f4692', 5) + dots(x0, x1, y, h, 5, .9, '#8f86d6', 6)],
+    truffle: [12, (x0, x1, y, h) => slab(x0 + 1, x1 - 1, y, h, '#f6c93f') + `<rect x="${x0 + 1}" y="${y + 1.5}" width="${x1 - x0 - 2}" height="${h * .28}" fill="#fbe08a" opacity=".8"/>` + dots(x0, x1, y, h, 16, .7, '#3a2a20', 7)],
+    peanut: [5, (x0, x1, y, h) => slab(x0, x1, y, h, '#b8743a') + `<path d="M${x0 + 10} ${y + h} q2 5 4 0z M${x1 - 14} ${y + h} q2 7 4 0z" fill="#b8743a"/>`],
+  };
+})();
+
+// 側面看到的餡料顏色
+const SANDO_SIDE = {
+  lettuce: '#8fbf4f', tomato: '#d9483a', egg: '#f2c13a', eggsalad: '#f1e0a0', chicken: '#e6cdb0', bacon: '#b9473f', beef: '#6e3b2a',
+  cheese: '#f0a020', katsu: '#d48a2e', pork: '#b07445', floss: '#be7f40', blueberry: '#e9e2ee', truffle: '#f2c13a', peanut: '#a8692f',
+};
+
 let sandoSeq = 0;
 window.sandoSVG = function (fill) {
   const id = 'sd' + (sandoSeq++);
-  const tri = 'M14 88 56 24l42 64z';
-  const layers = [...fill].reverse();
-  const h = Math.min(9, 26 / layers.length), base = 78;
-  const half = (cls, shade) => `
-    <g class="${cls}">
-      <path d="${tri}" fill="#f7e3b5"/>
-      <g clip-path="url(#${id})">
-        ${layers.map((c, i) => `<rect x="0" y="${base - (i + 1) * h}" width="120" height="${h + .5}" fill="${c}"/>`).join('')}
-        <path d="M0 ${base} q5 -5 10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 t10 0 v5 H0z" fill="#8cc063"/>
-        <rect x="0" y="${base + 3}" width="120" height="20" fill="#f7e3b5"/>
-      </g>
-      <path d="${tri}" fill="none" stroke="#d49a55" stroke-width="5" stroke-linejoin="round"/>
-      ${shade ? `<path d="${tri}" fill="#3a2414" opacity=".12"/>` : ''}
-    </g>`;
+  const W = 80, H = 76, top = 22, bot = 22, dx = 14, dy = -9;
+  const room = H - top - bot;
+  const total = fill.reduce((n, k) => n + SANDO_LAYERS[k][0], 0);
+  const spans = []; // [key, y, h]
+  let y = H - bot;
+  for (const k of fill) { const h = SANDO_LAYERS[k][0] * room / total; y -= h; spans.push([k, y, h]); }
+
+  // 麵包切面上的小氣孔（固定位置，避免每次不同）
+  const pores = (y0, h) => Array.from({ length: 14 }, (_, i) => {
+    const fx = ((i * 41 + 7) % 97) / 97, fy = ((i * 29 + 3) % 83) / 83;
+    return `<ellipse cx="${(5 + fx * (W - 10)).toFixed(1)}" cy="${(y0 + 4 + fy * (h - 8)).toFixed(1)}" rx="${(1 + (i % 3) * .5).toFixed(1)}" ry=".8" fill="#e9d3a8" opacity=".55"/>`;
+  }).join('');
+  const r = 1.5; // 與頂面、側面接合處要是直角，才不會露縫
+  const topFace = `<path d="M0 ${top}V${r}Q0 0 ${r} 0H${W - r}Q${W} 0 ${W} ${r}V${top}Z" fill="url(#${id}-crumb)"/>${pores(0, top)}
+    <path d="M1.3 ${top}V${r}Q1.3 1.3 ${r} 1.3H${W - r}Q${W - 1.3} 1.3 ${W - 1.3} ${r}V${top}" fill="none" stroke="#bf7b36" stroke-width="2.6"/>`;
+  const botFace = `<path d="M0 ${H - bot}V${H - r}Q0 ${H} ${r} ${H}H${W - r}Q${W} ${H} ${W} ${H - r}V${H - bot}Z" fill="url(#${id}-crumb)"/>${pores(H - bot, bot)}
+    <path d="M1.3 ${H - bot}V${H - r}Q1.3 ${H - 1.3} ${r} ${H - 1.3}H${W - r}Q${W - 1.3} ${H - 1.3} ${W - 1.3} ${H - r}V${H - bot}" fill="none" stroke="#bf7b36" stroke-width="2.6"/>`;
+
+  // 餡料：底色圖形 + 上亮下暗的光影
+  const filling = spans.map(([k, y, h]) => SANDO_LAYERS[k][1](1, W + .5, y, h) +
+    `<rect x="0" y="${y}" width="${W}" height="${h}" fill="url(#${id}-shade)" pointer-events="none"/>`).join('') +
+    `<rect x="0" y="${top}" width="${W}" height="3" fill="#3a2414" opacity=".14"/>`; // 上片吐司壓下的陰影
+
+  // 斜上方看到的吐司頂面、右側面
+  // 往左多畫 1.5、上下多 .4，塞在切面底下，避免接縫露白
+  const sideBand = (y0, h, fillc, extra = '') => `<path d="M${W - 1.5} ${y0 - .4}L${W + dx} ${y0 + dy - .4}V${y0 + dy + h + .4}L${W - 1.5} ${y0 + h + .4}z" fill="${fillc}" ${extra}/>`;
+  const side = sideBand(0, top, `url(#${id}-crust)`) +
+    spans.map(([k, y, h]) => sideBand(y, h, SANDO_SIDE[k]) + sideBand(y, h, '#2a1a0e', 'opacity=".28"')).join('') +
+    sideBand(H - bot, bot, `url(#${id}-crust)`);
+  const roof = `<path d="M0 1.5V0l${dx} ${dy}h${W}l${-dx} ${-dy}v1.5z" fill="url(#${id}-roof)"/>
+    <path d="M${dx * .3} ${dy * .3 + .2}h${W - 4}" stroke="#f1c27f" stroke-width="1.2" opacity=".7" stroke-linecap="round"/>`;
+
+  const half = cls => `<g class="${cls}">${side}${roof}${botFace}${filling}${topFace}</g>`;
   return `
-  <svg class="sando" viewBox="0 0 120 100" aria-hidden="true">
-    <defs><clipPath id="${id}"><path d="M20 85 56 31l36 54z"/></clipPath></defs>
-    <ellipse class="shadow" cx="60" cy="93" rx="44" ry="4" fill="#3a2414" opacity=".12"/>
-    ${half('back', true)}${half('front', false)}
+  <svg class="sando" viewBox="-6 -46 152 136" aria-hidden="true">
+    <defs>
+      <radialGradient id="${id}-crumb" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#fffbf2"/><stop offset=".7" stop-color="#fbefd6"/><stop offset="1" stop-color="#f1d9ab"/></radialGradient>
+      <linearGradient id="${id}-roof" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d9953f"/><stop offset="1" stop-color="#b8702c"/></linearGradient>
+      <linearGradient id="${id}-crust" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c6802f"/><stop offset="1" stop-color="#9c5e22"/></linearGradient>
+      <linearGradient id="${id}-shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".32"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>
+      <filter id="${id}-blur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+    </defs>
+    <ellipse class="shadow" cx="68" cy="81" rx="64" ry="6" fill="#3a2414" opacity=".2" filter="url(#${id}-blur)"/>
+    <g transform="translate(6 4)">${half('back')}</g>
+    <g transform="translate(6 4)">${half('front')}</g>
   </svg>`;
 };

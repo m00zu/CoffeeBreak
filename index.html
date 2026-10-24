@@ -109,6 +109,8 @@
   .mini.rec { background: #fbe1e1; color: #b8474f; }
   .mini.veg { background: #e3eed8; color: #4f7a35; }
   .mini.spicy { background: #fbdcd2; color: #b4432a; }
+  .mini.star { background: #ff7eb0; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 3px; animation: blink 1.6s ease-in-out infinite; }
+  .mini.star i { font-style: normal; display: inline-block; transform-origin: 50% 80%; animation: thumb 1.6s ease-in-out infinite; }
   .empty-search { text-align: center; color: var(--ink-soft); padding: 40px 0; }
 
   /* 「不需要」卡片 */
@@ -251,6 +253,8 @@
   @keyframes blob { 33% { border-radius: 42% 58% 45% 55% / 60% 40% 60% 40%; } 66% { border-radius: 55% 45% 38% 62% / 45% 55% 50% 50%; } }
   @keyframes sway { 50% { rotate: 12deg; translate: 0 -4px; } }
   @keyframes barIn { from { translate: -50% 160%; } }
+  @keyframes blink { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(255, 105, 160, .55); } 50% { opacity: .7; box-shadow: 0 0 0 6px rgba(255, 105, 160, 0); } }
+  @keyframes thumb { 0%, 100% { transform: none; } 25% { transform: rotate(-16deg) scale(1.3); } 50% { transform: rotate(8deg); } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -386,6 +390,7 @@
 
   function tagsOf(it) {
     const t = [];
+    if (it.star) t.push(`<span class="mini star">${it.star}<i>👍</i></span>`);
     if (it.tag === '新品' || it.tag === '限定') t.push(`<span class="mini new">${it.tag}</span>`);
     else if (it.tag === '人氣' || it.tag === '招牌') t.push(`<span class="mini pop">${it.tag}</span>`);
     else if (it.tag) t.push(`<span class="mini">${it.tag}</span>`);

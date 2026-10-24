@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>口委老師點餐</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #faf4ea; --paper-2: #f3e9d8; --ink: #2d2017; --ink-soft: #7a6656;
+    --line: rgba(45, 32, 23, .12); --accent: #8a5a2b; --card: #fffdf8; --gold: #f6c98b; --leaf: #6b8e4e;
+    --shadow: 0 10px 30px -12px rgba(80, 50, 20, .35);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Noto Sans TC', system-ui, sans-serif; color: var(--ink); background: var(--paper);
+    background-image: radial-gradient(circle at 15% 0%, #fde8c8 0, transparent 45%), radial-gradient(circle at 100% 30%, #f2dfc6 0, transparent 40%);
+    min-height: 100vh; padding-bottom: 150px;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+  .serif { font-family: 'Noto Serif TC', serif; }
+  .script { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+
+  .demo { background: #2d2017; color: var(--gold); text-align: center; font-size: 13px; padding: 8px 16px; }
+
+  /* Hero */
+  header { padding: 52px 0 20px; text-align: center; }
+  .eyebrow { letter-spacing: .3em; font-size: 12px; color: var(--ink-soft); text-transform: uppercase; animation: rise .8s both; }
+  h1 { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: clamp(30px, 6vw, 52px); margin: 12px 0 10px; line-height: 1.25; animation: rise .8s .1s both; }
+  h1 em { font-style: normal; color: var(--accent); position: relative; z-index: 0; transition: color .45s; }
+  h1 em::after { content: ''; position: absolute; left: 0; right: 0; bottom: 4px; height: 10px; background: var(--gold); opacity: .55; z-index: -1; border-radius: 4px; transform-origin: left; animation: swipe .9s .7s both; }
+  .lead { color: var(--ink-soft); margin: 0 auto; max-width: 540px; line-height: 1.8; animation: rise .8s .2s both; }
+  .hero-art { display: flex; justify-content: center; align-items: flex-end; gap: 4px; margin-bottom: 6px; animation: rise .8s both; }
+  .hero-art .cup { width: 70px; color: var(--ink-soft); animation: bob 4s 1s ease-in-out infinite; }
+  .hero-art .sando { width: 86px; animation: bob 4s 1.6s ease-in-out infinite; }
+  .hero-art .steam path { animation: steam 2.4s infinite; }
+  .hero-art .steam path:nth-child(2) { animation-delay: .5s; }
+  .hero-art .steam path:nth-child(3) { animation-delay: 1s; }
+
+  .name-box { margin: 26px auto 0; max-width: 420px; position: relative; animation: rise .8s .3s both; }
+  .name-box input {
+    width: 100%; font: inherit; font-size: 17px; padding: 16px 20px 16px 52px; border-radius: 999px;
+    border: 1.5px solid var(--line); background: var(--card); color: var(--ink); outline: none; transition: .25s; box-shadow: var(--shadow);
+  }
+  .name-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 5px rgba(138, 90, 43, .12), var(--shadow); }
+  .name-box svg { position: absolute; left: 20px; top: 50%; translate: 0 -50%; width: 20px; color: var(--ink-soft); }
+  .name-box.shake { animation: shake .45s; }
+
+  /* 主分頁：飲料 / 三明治 */
+  .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 560px; margin: 36px auto 0; scroll-margin-top: 16px; animation: rise .8s .4s both; }
+  .step { font: inherit; color: var(--ink); text-align: left; cursor: pointer; border: 1.5px solid var(--line); background: var(--card); border-radius: 22px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; transition: .3s; position: relative; }
+  .step:hover { transform: translateY(-2px); }
+  .step.on { border-color: var(--ink); background: var(--ink); color: #fff; box-shadow: var(--shadow); }
+  .step .ic { width: 42px; flex: none; display: grid; place-items: center; }
+  .step .ic .cup { width: 34px; color: currentColor; }
+  .step .ic .sando { width: 42px; }
+  .step small { display: block; font-size: 12px; opacity: .65; letter-spacing: .1em; }
+  .step b { font-size: 17px; }
+  .step .st { position: absolute; top: 10px; right: 12px; font-size: 11px; padding: 2px 8px; border-radius: 99px; background: var(--paper-2); color: var(--ink-soft); }
+  .step .st.ok { background: var(--leaf); color: #fff; animation: pop .4s; }
+
+  .sec { display: none; }
+  .sec.on { display: block; animation: rise .5s both; }
+
+  /* 飲料：店家分頁 + 工具列 */
+  .tabs { display: flex; margin: 30px auto 8px; width: fit-content; background: var(--paper-2); padding: 6px; border-radius: 999px; position: relative; }
+  .tab { position: relative; z-index: 1; border: 0; background: none; font: inherit; font-weight: 700; padding: 12px 28px; cursor: pointer; color: var(--ink-soft); transition: color .3s; border-radius: 999px; }
+  .tab small { display: block; font-weight: 400; font-size: 11px; letter-spacing: .15em; opacity: .7; }
+  .tab.on { color: #fff; }
+  .pill { position: absolute; top: 6px; bottom: 6px; border-radius: 999px; background: var(--accent); transition: left .45s cubic-bezier(.6, -0.2, .3, 1.3), width .45s, background .45s; box-shadow: 0 6px 16px -6px var(--accent); }
+  .brand-tag { text-align: center; color: var(--ink-soft); font-size: 14px; min-height: 22px; font-family: 'Noto Serif TC', serif; }
+
+  .toolbar { position: sticky; top: 0; z-index: 5; margin: 18px -16px 0; padding: 10px 16px; background: rgba(250, 244, 234, .86); backdrop-filter: blur(10px); border-bottom: 1px solid transparent; transition: border-color .3s; }
+  .toolbar.stuck { border-color: var(--line); }
+  .toolbar-in { display: flex; gap: 10px; align-items: center; }
+  .cats { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cats button { font: inherit; font-size: 13px; white-space: nowrap; border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); padding: 7px 14px; border-radius: 99px; cursor: pointer; transition: .2s; }
+  .cats button:hover { border-color: var(--accent); color: var(--accent); }
+  .search { position: relative; flex: 0 0 180px; }
+  .search input { width: 100%; font: inherit; font-size: 14px; padding: 8px 14px 8px 34px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); color: var(--ink); outline: none; }
+  .search input:focus { border-color: var(--accent); }
+  .search svg { position: absolute; left: 12px; top: 50%; translate: 0 -50%; width: 15px; color: var(--ink-soft); }
+  @media (max-width: 600px) { .toolbar-in { flex-direction: column-reverse; align-items: stretch; } .search { flex: none; } }
+
+  .cat { font-family: 'Noto Serif TC', serif; font-size: 21px; margin: 32px 0 14px; display: flex; align-items: center; gap: 14px; scroll-margin-top: 80px; }
+  .cat::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 14px; cursor: pointer; text-align: left; font: inherit; color: inherit;
+    display: grid; grid-template-columns: 46px 1fr; gap: 12px; align-items: center; position: relative; overflow: hidden;
+    transition: transform .3s cubic-bezier(.3, 1.5, .5, 1), box-shadow .3s, border-color .3s;
+    animation: rise .55s both; animation-delay: calc(min(var(--i), 18) * 35ms);
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: transparent; }
+  .card:active { transform: scale(.98); }
+  .card .cup { width: 46px; color: var(--ink-soft); }
+  .card:hover .steam path { animation: steam 1.6s infinite; }
+  .card h3 { margin: 0 0 6px; font-size: 15px; line-height: 1.4; }
+  .card.picked { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+  .card.picked::before { content: '✓'; position: absolute; right: 12px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 13px; display: grid; place-items: center; animation: pop .4s; }
+  .chipline { display: flex; gap: 4px; flex-wrap: wrap; }
+  .mini { font-size: 11px; padding: 1px 8px; border-radius: 99px; background: var(--paper-2); color: var(--ink-soft); }
+  .mini.hot { background: #fde3d6; color: #b4532a; }
+  .mini.ice { background: #dcecf5; color: #2f6f93; }
+  .mini.new { background: #e9864c; color: #fff; }
+  .mini.pop { background: var(--accent); color: #fff; }
+  .mini.rec { background: #fbe1e1; color: #b8474f; }
+  .mini.veg { background: #e3eed8; color: #4f7a35; }
+  .mini.spicy { background: #fbdcd2; color: #b4432a; }
+  .empty-search { text-align: center; color: var(--ink-soft); padding: 40px 0; }
+
+  /* 「不需要」卡片 */
+  .none-card {
+    width: 100%; margin-top: 22px; font: inherit; color: var(--ink-soft); cursor: pointer; background: transparent; border: 2px dashed rgba(45, 32, 23, .22); border-radius: 22px;
+    padding: 16px 20px; display: flex; align-items: center; gap: 16px; text-align: left; transition: .3s; position: relative;
+  }
+  .none-card:hover { border-color: var(--accent); color: var(--ink); background: rgba(255, 253, 248, .6); }
+  .none-card svg { width: 44px; flex: none; }
+  .none-card b { display: block; font-size: 16px; color: var(--ink); }
+  .none-card small { font-size: 13px; }
+  .none-card.picked { border-style: solid; border-color: var(--ink); background: var(--card); }
+  .none-card.picked::after { content: '✓ 已選擇'; position: absolute; right: 18px; font-size: 13px; font-weight: 700; color: var(--ink); animation: pop .4s; }
+
+  /* 三明治藝廊 */
+  .gallery-head { text-align: center; margin: 44px 0 6px; position: relative; }
+  .gallery-head .script { font-size: 22px; color: var(--leaf); display: block; animation: rise .7s both; }
+  .gallery-head h2 { font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: clamp(34px, 6vw, 50px); margin: 2px 0; letter-spacing: .12em; animation: rise .7s .08s both; }
+  .gallery-head p { color: var(--ink-soft); margin: 0; letter-spacing: .3em; font-size: 13px; animation: rise .7s .16s both; }
+  .gallery-head .leaf { position: absolute; width: 34px; color: var(--leaf); opacity: .7; animation: sway 5s ease-in-out infinite; }
+  .gallery-head .leaf.l { left: 12%; top: 10px; }
+  .gallery-head .leaf.r { right: 12%; top: 40px; animation-delay: -2.5s; scale: -1 1; }
+  .legend { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin: 16px 0 0; font-size: 12px; color: var(--ink-soft); }
+
+  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; margin-top: 26px; }
+  .sando-card {
+    font: inherit; color: inherit; text-align: center; cursor: pointer; background: var(--card); border: 1px solid var(--line); border-radius: 30px;
+    padding: 18px 18px 20px; position: relative; overflow: hidden; transition: transform .45s cubic-bezier(.3, 1.4, .5, 1), box-shadow .4s, border-color .3s;
+    animation: rise .7s both; animation-delay: calc(var(--i) * 70ms);
+  }
+  .sando-card:hover { transform: translateY(-6px) rotate(-.6deg); box-shadow: 0 24px 40px -22px rgba(80, 50, 20, .45); }
+  .sando-card:nth-child(even):hover { transform: translateY(-6px) rotate(.6deg); }
+  .sando-card .no { position: absolute; left: 20px; top: 16px; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 18px; color: var(--ink-soft); }
+  .art { position: relative; height: 150px; display: grid; place-items: center; margin-bottom: 8px; }
+  .art::before {
+    content: ''; position: absolute; width: 150px; height: 130px; background: var(--bg); border-radius: 58% 42% 55% 45% / 50% 60% 40% 50%;
+    animation: blob 9s ease-in-out infinite; animation-delay: calc(var(--i) * -1.3s); transition: scale .5s cubic-bezier(.3, 1.5, .5, 1);
+  }
+  .sando-card:hover .art::before { scale: 1.12; }
+  .art .sando { width: 138px; position: relative; overflow: visible; }
+  .sando .back, .sando .front { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .6s cubic-bezier(.3, 1.5, .5, 1); }
+  .sando .back { transform: translate(12px, -9px); }
+  .sando-card:hover .sando .front, .sando-card.picked .sando .front { transform: translate(-8px, 3px) rotate(-6deg); }
+  .sando-card:hover .sando .back, .sando-card.picked .sando .back { transform: translate(20px, -14px) rotate(7deg); }
+  .sando .shadow { transition: .5s; transform-box: fill-box; transform-origin: center; }
+  .sando-card:hover .sando .shadow { transform: scaleX(1.15); opacity: .18; }
+  .sando-card h3 { font-family: 'Noto Serif TC', serif; font-size: 19px; margin: 6px 0 6px; }
+  .sando-card p { margin: 0 0 12px; color: var(--ink-soft); font-size: 13px; line-height: 1.6; min-height: 21px; }
+  .sando-card .chipline { justify-content: center; min-height: 20px; }
+  .stamp {
+    position: absolute; right: 16px; top: 14px; width: 62px; height: 62px; border-radius: 50%; border: 2.5px solid var(--leaf); color: var(--leaf);
+    display: grid; place-items: center; font-family: 'Noto Serif TC', serif; font-weight: 900; font-size: 15px; letter-spacing: .1em; rotate: -16deg;
+    opacity: 0; scale: 2; transition: opacity .25s, scale .4s cubic-bezier(.3, 1.6, .5, 1); background: rgba(255, 253, 248, .7);
+  }
+  .stamp::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 1px dashed currentColor; }
+  .sando-card.picked { border-color: var(--leaf); box-shadow: 0 0 0 2px var(--leaf) inset; }
+  .sando-card.picked .stamp { opacity: 1; scale: 1; }
+
+  /* 抽屜 */
+  .scrim { position: fixed; inset: 0; background: rgba(40, 25, 10, .35); backdrop-filter: blur(3px); opacity: 0; pointer-events: none; transition: .35s; z-index: 20; }
+  .scrim.on { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed; left: 50%; bottom: 0; width: min(560px, 100%); translate: -50% 105%; background: var(--card); z-index: 21;
+    border-radius: 28px 28px 0 0; padding: 26px 22px 22px; transition: translate .5s cubic-bezier(.2, .9, .3, 1.05); box-shadow: 0 -20px 60px -20px rgba(0, 0, 0, .3); max-height: 88vh; overflow: auto;
+  }
+  .sheet.on { translate: -50% 0; }
+  .sheet .head { display: flex; gap: 16px; align-items: center; margin-bottom: 4px; }
+  .sheet .head .cup { width: 64px; color: var(--ink-soft); flex: none; }
+  .sheet h2 { font-family: 'Noto Serif TC', serif; margin: 0 0 4px; font-size: 22px; }
+  .sheet .brandname { color: var(--ink-soft); font-size: 13px; }
+  .sheet .sando-hero { text-align: center; }
+  .sheet .sando-hero .art { height: 170px; }
+  .sheet .sando-hero .art .sando { width: 160px; }
+  .sheet .sando-hero .sando .front { transform: translate(-8px, 3px) rotate(-6deg); }
+  .sheet .sando-hero .sando .back { transform: translate(20px, -14px) rotate(7deg); }
+  .sheet .sando-hero h2 { font-size: 26px; }
+  .sheet .sando-hero p { color: var(--ink-soft); margin: 4px 0 10px; }
+  .sheet .sando-hero .chipline { justify-content: center; }
+  .opt-label { font-size: 13px; color: var(--ink-soft); margin: 18px 0 8px; font-weight: 700; letter-spacing: .05em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1.5px solid var(--line); background: none; font: inherit; padding: 8px 16px; border-radius: 999px; cursor: pointer; transition: .2s; color: var(--ink); }
+  .chip:hover { border-color: var(--accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; animation: pop .3s; }
+  textarea { width: 100%; font: inherit; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 14px; resize: none; background: var(--paper); color: var(--ink); outline: none; }
+  textarea:focus { border-color: var(--accent); }
+  .btn { border: 0; font: inherit; font-weight: 700; cursor: pointer; border-radius: 999px; padding: 15px 22px; background: var(--accent); color: #fff; transition: transform .2s, box-shadow .2s, background .4s, opacity .3s; box-shadow: 0 10px 22px -10px var(--accent); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: scale(.97); }
+  .btn.full { width: 100%; margin-top: 22px; font-size: 16px; }
+  .btn.leaf { background: var(--leaf); box-shadow: 0 10px 22px -10px var(--leaf); }
+
+  /* 底部：我的選擇 */
+  .bar {
+    position: fixed; left: 50%; bottom: 16px; translate: -50% 0; width: min(680px, calc(100% - 24px)); background: var(--ink); color: #fff; border-radius: 24px; z-index: 10;
+    padding: 8px; display: flex; align-items: stretch; gap: 8px; box-shadow: 0 20px 40px -14px rgba(0, 0, 0, .5); animation: barIn .7s .6s cubic-bezier(.3, 1.4, .5, 1) both;
+  }
+  .slot { flex: 1; min-width: 0; font: inherit; color: inherit; text-align: left; background: rgba(255, 255, 255, .07); border: 1.5px dashed rgba(255, 255, 255, .25); border-radius: 18px; padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: .3s; }
+  .slot:hover { background: rgba(255, 255, 255, .12); }
+  .slot .ic { width: 30px; flex: none; display: grid; place-items: center; opacity: .5; transition: .3s; }
+  .slot .ic .cup { width: 24px; color: #fff; }
+  .slot .ic .sando { width: 32px; }
+  .slot small { display: block; font-size: 11px; opacity: .6; letter-spacing: .1em; }
+  .slot b { display: block; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .slot.set, .slot.none { border-style: solid; border-color: transparent; background: rgba(255, 255, 255, .12); }
+  .slot.set .ic { opacity: 1; }
+  .slot.set b { color: var(--gold); }
+  .slot.none b { opacity: .7; }
+  .slot.bump { animation: pop .45s; }
+  .slot.nudge { animation: shake .45s; border-color: var(--gold); }
+  .bar .btn { background: var(--gold); color: var(--ink); box-shadow: none; padding: 0 20px; flex: none; }
+  .bar .btn.wait { opacity: .45; }
+  @media (max-width: 520px) { .slot .ic { display: none; } .bar .btn { padding: 0 14px; } }
+
+  /* 完成 */
+  .done { position: fixed; inset: 0; background: var(--paper); z-index: 40; display: grid; place-items: center; text-align: center; opacity: 0; pointer-events: none; transition: opacity .5s; padding: 16px; overflow: auto; }
+  .done.on { opacity: 1; pointer-events: auto; }
+  .done .art-row { display: flex; justify-content: center; align-items: flex-end; gap: 6px; }
+  .done .cup { width: 96px; color: var(--ink-soft); }
+  .done .sando { width: 120px; }
+  .done.on .art-row > * { animation: pop .7s cubic-bezier(.3, 1.6, .5, 1) both; }
+  .done.on .art-row > *:nth-child(2) { animation-delay: .15s; }
+  .done .steam path { animation: steam 2.4s infinite; }
+  .done h2 { font-family: 'Noto Serif TC', serif; font-size: 32px; margin: 18px 0 8px; }
+  .done p { color: var(--ink-soft); line-height: 1.8; margin: 0; }
+  .receipt { background: var(--card); border-radius: 16px; padding: 14px 20px; margin: 18px auto; text-align: left; max-width: 380px; border: 1px dashed var(--line); font-size: 14px; line-height: 1.8; }
+  .receipt .row + .row { border-top: 1px dashed var(--line); margin-top: 8px; padding-top: 8px; }
+  .receipt small { color: var(--ink-soft); }
+
+  .toast { position: fixed; left: 50%; top: 20px; translate: -50% -150%; background: #b4432a; color: #fff; padding: 12px 20px; border-radius: 14px; z-index: 50; transition: translate .4s cubic-bezier(.3, 1.4, .5, 1); font-size: 14px; max-width: calc(100% - 32px); }
+  .toast.on { translate: -50% 0; }
+
+  .note { text-align: center; font-size: 12px; color: var(--ink-soft); margin-top: 50px; opacity: .75; line-height: 1.8; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  @keyframes swipe { from { transform: scaleX(0); } }
+  @keyframes bob { 50% { transform: translateY(-6px); } }
+  @keyframes pop { 0% { transform: scale(.6); } 60% { transform: scale(1.12); } }
+  @keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+  @keyframes steam { 0% { opacity: 0; transform: translateY(6px); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateY(-6px); } }
+  @keyframes blob { 33% { border-radius: 42% 58% 45% 55% / 60% 40% 60% 40%; } 66% { border-radius: 55% 45% 38% 62% / 45% 55% 50% 50%; } }
+  @keyframes sway { 50% { rotate: 12deg; translate: 0 -4px; } }
+  @keyframes barIn { from { translate: -50% 160%; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="demo" id="demo" hidden>示範模式：尚未連接收單後端，送出的資料不會傳給任何人</div>
+<div class="wrap">
+  <header>
+    <div class="hero-art" id="heroArt"></div>
+    <div class="eyebrow">Oral Defense · Coffee Break</div>
+    <h1>口委老師，請<em>點餐</em></h1>
+    <p class="lead">請選一杯飲料和一份三明治（不需要的話也可以選「不用了」），留下大名後送出，我會幫您準備好。</p>
+    <div class="name-box" id="nameBox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      <input id="name" placeholder="請輸入您的大名，例如：王老師" autocomplete="name" maxlength="40">
+    </div>
+  </header>
+
+  <div class="steps" id="steps">
+    <button class="step on" data-s="drink"><span class="ic" id="icDrink"></span><div><small>STEP 1</small><b>選飲料</b></div><span class="st" id="stDrink">未選</span></button>
+    <button class="step" data-s="sandwich"><span class="ic" id="icSando"></span><div><small>STEP 2</small><b>選三明治</b></div><span class="st" id="stSando">未選</span></button>
+  </div>
+
+  <!-- 飲料 -->
+  <section class="sec on" id="sec-drink">
+    <div class="tabs" id="tabs">
+      <span class="pill" id="pill"></span>
+      <button class="tab on" data-b="louisa"></button>
+      <button class="tab" data-b="tea"></button>
+    </div>
+    <div class="brand-tag" id="brandTag"></div>
+    <button class="none-card" id="noDrink">
+      <svg viewBox="0 0 80 96" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="5 5" stroke-linecap="round"><path d="M14 30h52l-6 58a6 6 0 0 1-6 5H26a6 6 0 0 1-6-5z"/><rect x="10" y="26" width="60" height="7" rx="3.5"/></svg>
+      <div><b>這次不用飲料</b><small>只要三明治就好</small></div>
+    </button>
+    <div class="toolbar" id="toolbar">
+      <div class="toolbar-in">
+        <div class="cats" id="cats"></div>
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" placeholder="搜尋飲品" aria-label="搜尋飲品">
+        </label>
+      </div>
+    </div>
+    <main id="menu"></main>
+  </section>
+
+  <!-- 三明治 -->
+  <section class="sec" id="sec-sandwich">
+    <div class="gallery-head">
+      <svg class="leaf l" viewBox="0 0 40 40" fill="currentColor"><path d="M6 34C6 16 18 6 36 4c-2 18-12 30-30 30zm0 0 18-18" stroke="currentColor" stroke-width="1.5" fill-opacity=".85"/></svg>
+      <svg class="leaf r" viewBox="0 0 40 40" fill="currentColor"><path d="M6 34C6 16 18 6 36 4c-2 18-12 30-30 30zm0 0 18-18" stroke="currentColor" stroke-width="1.5" fill-opacity=".85"/></svg>
+      <span class="script">handmade sandos</span>
+      <h2>布島小樹</h2>
+      <p>職人手作・便利輕食</p>
+      <div class="legend"><span><span class="mini rec">♡ 推薦</span> 小樹老闆推薦</span><span><span class="mini veg">蛋奶素</span> 素食可</span></div>
+    </div>
+    <button class="none-card" id="noSando">
+      <svg viewBox="0 0 96 80" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="5 5" stroke-linecap="round"><ellipse cx="48" cy="52" rx="42" ry="14"/><ellipse cx="48" cy="50" rx="26" ry="7"/></svg>
+      <div><b>這次不用三明治</b><small>只要飲料就好</small></div>
+    </button>
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <p class="note">路易莎品項依 2026 年 10 月菜單整理，季節限定可能已更換；實際以門市供應為準。</p>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+
+<div class="bar" id="bar">
+  <button class="slot" id="slotDrink" data-s="drink"><span class="ic"></span><div style="min-width:0"><small>飲料</small><b>尚未選擇</b></div></button>
+  <button class="slot" id="slotSando" data-s="sandwich"><span class="ic"></span><div style="min-width:0"><small>三明治</small><b>尚未選擇</b></div></button>
+  <button class="btn wait" id="submit">送出</button>
+</div>
+
+<div class="done" id="done"></div>
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="menu-data.js"></script>
+<script>
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // undefined = 還沒決定；null = 不需要；物件 = 已選
+  const order = { drink: undefined, sandwich: undefined };
+  let brand = 'louisa', section = 'drink', query = '';
+
+  // ---------- 送出 ----------
+  const api = window.ENDPOINT ? {
+    async save(payload) {
+      // text/plain 可避免跨網域預檢，Apps Script 才收得到
+      const r = await fetch(window.ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      const j = await r.json(); if (!j.ok) throw new Error(j.error);
+    },
+  } : {
+    async save(payload) { console.log('[示範模式] 將送出：', payload); await new Promise(r => setTimeout(r, 700)); },
+  };
+  if (!window.ENDPOINT) $('#demo').hidden = false;
+
+  // ---------- 插圖 ----------
+  const sandoOf = name => SANDWICH.items.find(s => s.name === name);
+  $('#heroArt').innerHTML = cupSVG('#c49a6c', true) + sandoSVG(SANDWICH.items[2].fill);
+  $('#icDrink').innerHTML = cupSVG('#c49a6c', false);
+  $('#icSando').innerHTML = sandoSVG(SANDWICH.items[0].fill);
+
+  // ---------- 分頁切換 ----------
+  function setSection(s, scroll) {
+    section = s;
+    document.querySelectorAll('.step').forEach(x => x.classList.toggle('on', x.dataset.s === s));
+    document.querySelectorAll('.sec').forEach(x => x.classList.toggle('on', x.id === 'sec-' + s));
+    if (s === 'drink') requestAnimationFrame(movePill);
+    if (scroll) $('#steps').scrollIntoView({ behavior: 'smooth' });
+  }
+  $('#steps').onclick = e => { const b = e.target.closest('.step'); if (b) setSection(b.dataset.s); };
+
+  // 選完一項後，自動帶到另一項還沒決定的
+  function decided(kind) {
+    renderAll();
+    const other = kind === 'drink' ? 'sandwich' : 'drink';
+    if (order[other] === undefined) setTimeout(() => setSection(other, true), 350);
+  }
+
+  // ---------- 飲料 ----------
+  function movePill() {
+    const on = document.querySelector('.tab.on');
+    if (!on.offsetWidth) return;
+    $('#pill').style.left = on.offsetLeft + 'px';
+    $('#pill').style.width = on.offsetWidth + 'px';
+    $('#pill').style.background = MENU[brand].accent;
+  }
+
+  document.querySelectorAll('.tab').forEach(t => t.innerHTML = `${MENU[t.dataset.b].name}<small>${MENU[t.dataset.b].en}</small>`);
+
+  function tagsOf(it) {
+    const t = [];
+    if (it.tag === '新品' || it.tag === '限定') t.push(`<span class="mini new">${it.tag}</span>`);
+    else if (it.tag === '人氣' || it.tag === '招牌') t.push(`<span class="mini pop">${it.tag}</span>`);
+    else if (it.tag) t.push(`<span class="mini">${it.tag}</span>`);
+    if (MENU[brand].temps) { /* 整家店都是冷飲，不另外標 */ }
+    else if (it.t === 'ice') t.push('<span class="mini ice">僅冰</span>');
+    else if (it.t === 'hot') t.push('<span class="mini hot">僅熱</span>');
+    else t.push('<span class="mini">冷 / 熱</span>');
+    return t.join('');
+  }
+
+  function renderMenu() {
+    const b = MENU[brand];
+    document.documentElement.style.setProperty('--accent', b.accent);
+    $('#brandTag').textContent = '— ' + b.tagline + ' —';
+    $('#cats').innerHTML = b.categories.map((c, i) => `<button data-c="${i}">${c.name}</button>`).join('');
+    let i = 0;
+    const html = b.categories.map((c, ci) => {
+      const items = c.items.map((it, ii) => ({ it, ii })).filter(({ it }) => !query || it.name.includes(query));
+      if (!items.length) return '';
+      return `<div class="cat" id="cat-${ci}">${c.name}</div><div class="grid">${items.map(({ it, ii }) => `
+        <button class="card ${order.drink && order.drink.brand === brand && order.drink.item === it.name ? 'picked' : ''}" style="--i:${i++}" data-c="${ci}" data-i="${ii}">
+          ${cupSVG(toneOf(it.name), !b.temps && it.t !== 'ice')}
+          <div><h3>${it.name}</h3><div class="chipline">${tagsOf(it)}</div></div>
+        </button>`).join('')}</div>`;
+    }).join('');
+    $('#menu').innerHTML = html || `<div class="empty-search">找不到「${esc(query)}」，換個關鍵字試試看？</div>`;
+  }
+
+  document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === t));
+    brand = t.dataset.b; movePill(); renderMenu();
+  });
+  $('#cats').onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const el = document.getElementById('cat-' + b.dataset.c);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+  $('#q').oninput = e => { query = e.target.value.trim(); renderMenu(); };
+  new IntersectionObserver(([e]) => $('#toolbar').classList.toggle('stuck', e.intersectionRatio < 1), { threshold: 1, rootMargin: '-1px 0px 0px 0px' }).observe($('#toolbar'));
+
+  $('#menu').onclick = e => {
+    const card = e.target.closest('.card'); if (!card) return;
+    openDrink(MENU[brand].categories[card.dataset.c].items[card.dataset.i]);
+  };
+  $('#noDrink').onclick = () => { order.drink = null; decided('drink'); };
+
+  function openDrink(item) {
+    const b = MENU[brand];
+    const temps = b.temps || (item.t === 'ice' ? ['正常冰', '少冰', '去冰'] : item.t === 'hot' ? ['熱'] : ['熱', '正常冰', '少冰', '去冰']);
+    let sugars = b.sugars || (b.sugar ? ['正常糖', '少糖', '半糖', '微糖', '無糖'] : null);
+    if (sugars && item.minSugar) sugars = sugars.slice(sugars.indexOf(item.minSugar));
+    const toppings = (b.toppings || []).filter(t => !(item.cheese && t === '芝士奶蓋'));
+    const opt = {
+      size: b.sizes.length > 1 ? b.sizes[0] : '', temp: temps[0], sweetener: item.sweeteners ? item.sweeteners[0] : '',
+      sugar: sugars ? (b.sugars ? sugars[0] : '正常糖') : '', milk: hasMilk(item.name) && b.milks.length ? b.milks[0] : '', toppings: [],
+    };
+    const group = (key, label, list) => `<div class="opt-label">${label}</div>
+      <div class="chips" data-k="${key}">${list.map(v => `<button class="chip ${opt[key] === v ? 'on' : ''}" data-v="${v}">${v}</button>`).join('')}</div>`;
+    $('#sheet').innerHTML = `
+      <div class="head"><span id="sheetCup">${cupSVG(toneOf(item.name), temps[0] === '熱')}</span>
+        <div><h2>${item.name}</h2><div class="brandname">${b.name}</div><div class="chipline" style="margin-top:6px">${tagsOf(item)}</div></div></div>
+      ${opt.size ? group('size', '杯型', b.sizes) : ''}${group('temp', b.temps ? '冰塊' : '溫度', temps)}
+      ${opt.sweetener ? group('sweetener', '糖種', item.sweeteners) : ''}
+      ${sugars ? group('sugar', item.minSugar ? '甜度（本品最低微糖）' : '甜度', sugars) : ''}
+      ${opt.milk ? group('milk', '奶類', b.milks) : ''}
+      ${toppings.length ? `<div class="opt-label">加料（可複選，不加也可以）</div>
+        <div class="chips" data-k="toppings" data-multi>${toppings.map(v => `<button class="chip" data-v="${v}">＋ ${v}</button>`).join('')}</div>` : ''}
+      <div class="opt-label">備註（選填）</div><textarea id="note" rows="2" maxlength="80" placeholder="${brand === 'louisa' ? '例如：濃縮多一份' : '有特別需求可以寫在這裡'}"></textarea>
+      <button class="btn full" id="add">就決定這杯</button>`;
+    $('#sheet').querySelectorAll('.chips').forEach(g => g.onclick = e => {
+      const c = e.target.closest('.chip'); if (!c) return;
+      if (g.hasAttribute('data-multi')) {
+        c.classList.toggle('on');
+        opt.toppings = [...g.querySelectorAll('.chip.on')].map(x => x.dataset.v);
+        return;
+      }
+      g.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === c));
+      opt[g.dataset.k] = c.dataset.v;
+      if (g.dataset.k === 'temp') $('#sheetCup').innerHTML = cupSVG(toneOf(item.name), c.dataset.v === '熱');
+    });
+    $('#add').onclick = () => {
+      order.drink = { brand, brandName: b.name, item: item.name, ...opt, note: $('#note').value.trim() };
+      closeSheet(); decided('drink');
+    };
+    openSheet();
+  }
+
+  // ---------- 三明治 ----------
+  function sandoTags(s) {
+    return [s.rec && '<span class="mini rec">♡ 推薦</span>', s.veg && '<span class="mini veg">蛋奶素</span>',
+      s.bread && `<span class="mini">${s.bread}</span>`, s.spicy && '<span class="mini spicy">辣</span>'].filter(Boolean).join('');
+  }
+
+  function renderGallery() {
+    $('#gallery').innerHTML = SANDWICH.items.map((s, i) => `
+      <button class="sando-card ${order.sandwich?.item === s.name ? 'picked' : ''}" style="--i:${i};--bg:${s.bg}" data-i="${i}">
+        <span class="no">No.${String(i + 1).padStart(2, '0')}</span>
+        <span class="stamp">已選</span>
+        <div class="art">${sandoSVG(s.fill)}</div>
+        <h3>${s.name}</h3><p>${s.desc}</p>
+        <div class="chipline">${sandoTags(s)}</div>
+      </button>`).join('');
+  }
+  $('#gallery').onclick = e => { const c = e.target.closest('.sando-card'); if (c) openSando(SANDWICH.items[c.dataset.i]); };
+  $('#noSando').onclick = () => { order.sandwich = null; decided('sandwich'); };
+
+  function openSando(s) {
+    $('#sheet').innerHTML = `
+      <div class="sando-hero" style="--bg:${s.bg};--i:0"><div class="art">${sandoSVG(s.fill)}</div>
+        <h2>${s.name}</h2><p>${s.desc}</p><div class="chipline">${sandoTags(s)}</div></div>
+      <div class="opt-label">備註（選填）</div><textarea id="note" rows="2" maxlength="80" placeholder="例如：不要生菜、切邊"></textarea>
+      <button class="btn full leaf" id="add">就決定這份</button>`;
+    $('#add').onclick = () => {
+      order.sandwich = { shop: SANDWICH.name, item: s.name, note: $('#note').value.trim() };
+      closeSheet(); decided('sandwich');
+    };
+    openSheet();
+  }
+
+  function openSheet() { $('#scrim').classList.add('on'); $('#sheet').classList.add('on'); }
+  function closeSheet() { $('#scrim').classList.remove('on'); $('#sheet').classList.remove('on'); }
+  $('#scrim').onclick = closeSheet;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+  // ---------- 我的選擇 ----------
+  const drinkDetail = d => [d.size, d.temp, d.sweetener, d.sugar, d.milk, d.toppings?.length && '加' + d.toppings.join('、'), d.note].filter(Boolean).join('・');
+  const ready = () => order.drink !== undefined && order.sandwich !== undefined;
+
+  function renderSlot(el, val, art, emptyText) {
+    const prev = el.className;
+    el.className = 'slot ' + (val === undefined ? '' : val === null ? 'none' : 'set');
+    el.querySelector('.ic').innerHTML = art;
+    el.querySelector('b').textContent = val === undefined ? emptyText : val === null ? '不用了' : val.item;
+    if (prev !== el.className || val) { el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+  }
+
+  function renderAll() {
+    renderMenu(); renderGallery();
+    $('#noDrink').classList.toggle('picked', order.drink === null);
+    $('#noSando').classList.toggle('picked', order.sandwich === null);
+    const st = (el, v) => { el.textContent = v === undefined ? '未選' : '✓ 完成'; el.classList.toggle('ok', v !== undefined); };
+    st($('#stDrink'), order.drink); st($('#stSando'), order.sandwich);
+    renderSlot($('#slotDrink'), order.drink, order.drink ? cupSVG(toneOf(order.drink.item), order.drink.temp === '熱') : cupSVG('#c49a6c', false), '尚未選擇');
+    renderSlot($('#slotSando'), order.sandwich, sandoSVG(order.sandwich ? sandoOf(order.sandwich.item).fill : ['#f6e08a']), '尚未選擇');
+    $('#submit').classList.toggle('wait', !ready());
+  }
+  document.querySelectorAll('.slot').forEach(s => s.onclick = () => setSection(s.dataset.s, true));
+
+  function toast(msg) {
+    $('#toast').textContent = msg; $('#toast').classList.add('on');
+    clearTimeout(toast.t); toast.t = setTimeout(() => $('#toast').classList.remove('on'), 3500);
+  }
+  function nudge(el) { el.classList.remove('nudge'); void el.offsetWidth; el.classList.add('nudge'); }
+
+  $('#submit').onclick = async () => {
+    const name = $('#name').value.trim();
+    if (!ready()) {
+      const missing = order.drink === undefined ? 'drink' : 'sandwich';
+      nudge(missing === 'drink' ? $('#slotDrink') : $('#slotSando'));
+      setSection(missing, true);
+      toast(missing === 'drink' ? '還沒選飲料喔（不需要也可以選「不用了」）' : '還沒選三明治喔（不需要也可以選「不用了」）');
+      return;
+    }
+    if (order.drink === null && order.sandwich === null) { toast('兩樣都不需要嗎？至少選一樣吧 😊'); return; }
+    if (!name) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      $('#nameBox').classList.remove('shake'); void $('#nameBox').offsetWidth; $('#nameBox').classList.add('shake');
+      $('#name').focus(); return;
+    }
+    const btn = $('#submit'); btn.disabled = true; btn.textContent = '傳送中…';
+    try {
+      await api.save({ name, drink: order.drink, sandwich: order.sandwich });
+    } catch (err) {
+      console.error(err);
+      toast('送出失敗，請檢查網路後再試一次 🙏');
+      btn.disabled = false; btn.textContent = '送出'; return;
+    }
+    btn.disabled = false; btn.textContent = '送出';
+    const d = order.drink, s = order.sandwich;
+    $('#done').innerHTML = `<div>
+      <div class="art-row">${d ? cupSVG(toneOf(d.item), d.temp === '熱') : ''}${s ? sandoSVG(sandoOf(s.item).fill) : ''}</div>
+      <h2>收到了，${esc(name)}！</h2>
+      <p>您的選擇已經送出，口試當天見 ☕<br>想修改的話，用同樣的名字重新送出就可以。</p>
+      <div class="receipt">
+        <div class="row">飲料｜${d ? `<b>${esc(d.item)}</b>（${esc(d.brandName)}）<br><small>${esc(drinkDetail(d))}</small>` : '<small>不用了</small>'}</div>
+        <div class="row">三明治｜${s ? `<b>${esc(s.item)}</b>（${esc(s.shop)}）${s.note ? `<br><small>${esc(s.note)}</small>` : ''}` : '<small>不用了</small>'}</div>
+      </div>
+      <button class="btn" id="again">修改選擇</button></div>`;
+    $('#done').classList.add('on');
+    $('#again').onclick = () => $('#done').classList.remove('on');
+  };
+
+  renderAll(); requestAnimationFrame(movePill); window.onresize = movePill;
+</script>
+</body>
+</html>
